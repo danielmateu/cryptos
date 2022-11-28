@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useEffect, useState } from "react"
 import { monedas } from "../data/monedas"
 import useSelectMonedas from "../hooks/useSelectMonedas"
+import { Error } from "./Error"
 
 
 const InputSubmit = styled.input`
@@ -16,7 +17,7 @@ const InputSubmit = styled.input`
     border-radius: 6px;
     transition: all 0.3s ease-in-out;
     text-align: center;
-    margin-top: 20px;
+    margin: 20px auto;
 
     &:hover{
         background-color: #b6b8f5;
@@ -26,11 +27,13 @@ const InputSubmit = styled.input`
 
 `
 
-export const Formulario = () => {
+export const Formulario = ({setMonedas}) => {
 
     const [criptos, setCriptos] = useState([])
-    
+    const [error, setError] = useState(false);
+
     const [moneda, SelectMonedas] = useSelectMonedas('Elige tu Moneda', monedas);
+    const [criptomoneda, SelectCriptomoneda] = useSelectMonedas('Elige tu Criptomoneda', criptos);
 
     useEffect(() => {
         const consultarApi = async () => {
@@ -40,11 +43,11 @@ export const Formulario = () => {
             const respuesta = await fetch(url);
             const resultado = await respuesta.json();
 
-            const arrayCriptos = resultado.Data.map( cripto => {
+            const arrayCriptos = resultado.Data.map(cripto => {
 
                 const objeto = {
-                    id      :cripto.CoinInfo.Name,
-                    nombre  : cripto.CoinInfo.FullName
+                    id: cripto.CoinInfo.Name,
+                    nombre: cripto.CoinInfo.FullName
                 }
 
                 return objeto
@@ -56,22 +59,45 @@ export const Formulario = () => {
         }
         consultarApi();
     }, [])
-    
-    
 
-    SelectMonedas()
+    const handleSubmit = e => {
+        e.preventDefault()
+        console.log('Enviando formulario')
+
+        if ([moneda, criptomoneda].includes('')) {
+
+            setError(true);
+            return;
+        }
+
+        setError(false);
+
+        setMonedas({
+            moneda,
+            criptomoneda
+        })
+
+    }
+
+    // SelectMonedas()
 
     return (
+        <>
+        {error && <Error>Todos los campos son obligatorios</Error>}
 
-        <form action="">
+            <form
+                onSubmit={handleSubmit}
+            >
 
-            <SelectMonedas/>
-            
+                <SelectMonedas />
+                <SelectCriptomoneda />
 
-            <InputSubmit 
-                type="submit" 
-                value='Cotizar' 
+
+                <InputSubmit
+                    type="submit"
+                    value='Cotizar'
                 />
-        </form>
+            </form>
+        </>
     )
 }

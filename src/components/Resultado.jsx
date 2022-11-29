@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import 'animate.css';
 
 const ResultadoDiv = styled.div`
     color: #fff;
@@ -35,7 +36,7 @@ export const Resultado = ({ resultado }) => {
     const { PRICE, HIGHDAY, LOWDAY, CHANGEPCT24HOUR, IMAGEURL, LASTUPDATE } = resultado
 
     return (
-        <ResultadoDiv>
+        <ResultadoDiv className="animate__animated animate__fadeIn">
             <Image src={`https://cryptocompare.com/${IMAGEURL}`} alt="Imagen Cripto" />
             <div>
                 <Precio>El precio es de: <span>{PRICE}</span></Precio>
